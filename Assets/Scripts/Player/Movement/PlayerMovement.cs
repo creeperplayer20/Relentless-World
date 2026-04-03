@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerStats stats;
 
     [Header("Move")]
+    [Tooltip("Walking speed in units per second!")]
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float sprintSpeed = 8f;
     [SerializeField] private float jumpImpulse = 5f;
@@ -34,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float sprintStaminaCostPerSecond = 15f;
 
     [Header("Look")]
-    [Tooltip("Základní citlivost kamery. Pro Gamepad uprav citlivost pomocí 'Processors -> Scale Vector 2' přímo v Input Action Assetu.")]
+    [Tooltip("Sensitivity multiplier for looking around. Higher values make the camera more responsive to input.")]
     [SerializeField] private float lookSensitivity = 1f;
     [SerializeField] private float minPitch = -80f;
     [SerializeField] private float maxPitch = 80f;

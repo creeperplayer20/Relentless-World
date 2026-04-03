@@ -13,7 +13,7 @@ public class ZombieAI : MonoBehaviour
 
     public ZombieConfig Config => config;
     public ZombiePerception Perception => perception;
-    public Transform Target => target;
+    public Transform Target { get => target; set => target = value; }
     public NavMeshAgent Agent => agent;
 
     public bool IsDead { get; private set; }

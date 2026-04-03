@@ -19,6 +19,13 @@ public class ZombieChaseState : IZombieState
             return;
         }
 
+        if (ai.Perception != null && !ai.Perception.IsTargetInRange(ai.Target, ai.Config.detectRadius))
+        {
+            ai.Target = null;
+            ai.SetState(new ZombieIdleState(ai));
+            return;
+        }
+
         ai.Agent.SetDestination(ai.Target.position);
 
         if (ai.Perception != null && ai.Perception.IsTargetInRange(ai.Target, ai.Config.attackRange))
