@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerStats))]
 public class PlayerMovement : MonoBehaviour
 {
@@ -18,9 +18,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 lookInput;
 
     [Header("Components")]
-    private Rigidbody rb;
+    private CharacterController characterController;
     [SerializeField] private Transform cameraPivot;
-    [SerializeField] private Transform groundCheck;
     [SerializeField] private PlayerStats stats;
 
     [Header("Move")]
@@ -28,8 +27,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float sprintSpeed = 8f;
     [SerializeField] private float jumpImpulse = 5f;
     [SerializeField] private float jumpCooldownDuration = 0.5f;
-    [SerializeField] private float groundCheckDistance = 0.1f;
-    [SerializeField] private LayerMask groundMask = ~0;
+    [SerializeField] private float gravity = -20f;
 
     [Header("Costs")]
     [SerializeField] private float jumpStaminaCost = 20f;
@@ -43,13 +41,13 @@ public class PlayerMovement : MonoBehaviour
 
     private float pitch;
     private bool isGrounded;
-    private bool jumpRequested;
     private float nextJumpTime;
     private bool isSprinting;
+    private float verticalVelocity;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        characterController = GetComponent<CharacterController>();
 
         if (stats == null) stats = GetComponent<PlayerStats>();
 
@@ -66,7 +64,6 @@ public class PlayerMovement : MonoBehaviour
 
         sprintAction = playerMap.FindAction("Sprint", throwIfNotFound: false);
 
-        if (groundCheck == null) Debug.LogError($"{nameof(PlayerMovement)}: GroundCheck is not assigned.", this);
         if (inputActions == null) Debug.LogError($"{nameof(PlayerMovement)}: InputActions is not assigned.", this);
         if (stats == null) Debug.LogError($"{nameof(PlayerMovement)}: PlayerStats is missing on this GameObject.", this);
     }
@@ -88,40 +85,35 @@ public class PlayerMovement : MonoBehaviour
         moveInput = moveAction.ReadValue<Vector2>();
         lookInput = lookAction.ReadValue<Vector2>();
 
-        isGrounded = CheckGrounded();
+        isGrounded = characterController.isGrounded;
 
         bool wantsSprint = sprintAction != null && sprintAction.IsPressed();
         isSprinting = wantsSprint && moveInput.sqrMagnitude > 0.0001f && stats != null && stats.Stamina > 0.01f;
 
+        if (stats != null)
+        {
+            if (isSprinting)
+            {
+                if (!stats.TrySpendStamina(sprintStaminaCostPerSecond * Time.deltaTime))
+                    isSprinting = false;
+            }
+            else
+            {
+                stats.RegenStamina(20f * Time.deltaTime);
+            }
+        }
+
+        if (isGrounded && verticalVelocity < 0f)
+            verticalVelocity = Mathf.Max(verticalVelocity, -50f);
+
         TryJump();
+        ApplyGravity();
+        Move();
     }
 
     private void LateUpdate()
     {
         Look();
-    }
-
-    private void FixedUpdate()
-    {
-        float dt = Time.fixedDeltaTime;
-
-        if (isSprinting && stats != null)
-        {
-            float cost = sprintStaminaCostPerSecond * dt;
-            if (!stats.TrySpendStamina(cost)) isSprinting = false;
-        }
-        else if (stats != null)
-        {
-            stats.RegenStamina(dt);
-        }
-
-        Move();
-
-        if (jumpRequested)
-        {
-            rb.AddForce(Vector3.up * jumpImpulse, ForceMode.Impulse);
-            jumpRequested = false;
-        }
     }
 
     private void Move()
@@ -130,7 +122,11 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 localMove = new(moveInput.x, 0f, moveInput.y);
         Vector3 worldMove = transform.TransformDirection(localMove);
-        rb.MovePosition(rb.position + Time.fixedDeltaTime * speed * worldMove);
+
+        Vector3 velocity = worldMove * speed;
+        velocity.y = verticalVelocity;
+
+        characterController.Move(velocity * Time.deltaTime);
     }
 
     private void Look()
@@ -152,16 +148,15 @@ public class PlayerMovement : MonoBehaviour
         if (Time.time < nextJumpTime) return;
         if (!isGrounded) return;
         if (!jumpAction.WasPressedThisFrame()) return;
-
         if (stats != null && !stats.TrySpendStamina(jumpStaminaCost)) return;
 
-        jumpRequested = true;
+        verticalVelocity = jumpImpulse;
+
         nextJumpTime = Time.time + jumpCooldownDuration;
     }
 
-    private bool CheckGrounded()
+    private void ApplyGravity()
     {
-        if (groundCheck == null) return false;
-        return Physics.Raycast(groundCheck.position, Vector3.down, groundCheckDistance, groundMask, QueryTriggerInteraction.Ignore);
+        verticalVelocity += gravity * Time.deltaTime;
     }
 }

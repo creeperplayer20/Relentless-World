@@ -1039,8 +1039,7 @@ GameObject:
   - component: {fileID: 1870799618}
   - component: {fileID: 1870799617}
   - component: {fileID: 1870799621}
-  - component: {fileID: 1870799620}
-  - component: {fileID: 1870799619}
+  - component: {fileID: 1870799622}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -1062,16 +1061,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   cameraPivot: {fileID: 330585546}
-  groundCheck: {fileID: 1776003909}
   stats: {fileID: 0}
   walkSpeed: 5
   sprintSpeed: 8
   jumpImpulse: 5
   jumpCooldownDuration: 0.5
   groundCheckDistance: 0.1
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
+  gravity: -20
   jumpStaminaCost: 20
   sprintStaminaCostPerSecond: 15
   lookSensitivity: 0.05
@@ -1086,7 +1082,7 @@ Transform:
   m_GameObject: {fileID: 1870799616}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 419.1, y: 1.197, z: 455.1}
+  m_LocalPosition: {x: 419.1, y: 2.45, z: 455.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1095,56 +1091,6 @@ Transform:
   - {fileID: 1776003909}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &1870799619
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1870799616}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &1870799620
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1870799616}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 80
-  m_CollisionDetection: 1
 --- !u!114 &1870799621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1162,6 +1108,31 @@ MonoBehaviour:
   staminaRegenPerSecond: 15
   maxHunger: 100
   maxThirst: 100
+--- !u!143 &1870799622
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870799616}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1900063358
 GameObject:
   m_ObjectHideFlags: 0

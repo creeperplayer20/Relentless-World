@@ -64,10 +64,10 @@ public class PlayerStats : MonoBehaviour
         return true;
     }
 
-    public void RegenStamina(float dt)
+    public void RegenStamina(float toRestore)
     {
-        if (dt <= 0f) return;
-        Stamina = Mathf.Min(Stamina + staminaRegenPerSecond * dt, maxStamina);
+        if (toRestore <= 0f) return;
+        Stamina = Mathf.Min(Stamina + toRestore * staminaRegenPerSecond * Time.deltaTime, maxStamina);
     }
 
     public void AddHunger(float amount)
